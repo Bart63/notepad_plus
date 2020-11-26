@@ -17,16 +17,20 @@ class SampleApp(Tk):
 class StartPage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
+
+        Button(self, text = "Add note").pack()
+
         Label(self, text = "Switch to NotePage").pack()
         Button(self, text = "NotePage",
                   command = lambda: master.switch_frame(NotePage)).pack()
+
 
 class NotePage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         Label(self, text = "Enter your note here:").pack()
         Text(self).pack()
-        # you can get text from a text box using text_box.get("1.0", tk.END)
+        # you can get text from a text box using text_box.get("1.0", END)
         Label(self, text = "Switch to StartPage").pack()
         Button(self, text = "StartPage",
                   command = lambda: master.switch_frame(StartPage)).pack()
