@@ -7,25 +7,25 @@ noteList = []
 
 class Note:
 	
-	def __init__ (self):
-		frame = Frame(master)
-		frame.pack()
+    def __init__ (self):
+        self.frame = Frame(master)
+        self.frame.pack()
 
-		self.noteButton = Label(frame, text = "Title")
-		self.noteButton.pack(side= LEFT)
-
-
-		self.delButton  = Button(frame, text = "delete", command=self.delMe)
-		self.delButton.pack(side = LEFT)
+        self.noteButton = Label(self.frame, text = "Title")
+        self.noteButton.pack(side= LEFT)
 
 
-	def __del__(self):
-		print("Bye.")
+        self.delButton  = Button(self.frame, text = "delete", command=self.delMe)
+        self.delButton.pack(side = LEFT)
 
-	def delMe(self):
-		self.noteButton.pack_forget()
-		self.delButton.pack_forget()
-		del self
+
+    def __del__(self):
+        print("Bye.")
+        
+    def delMe(self):
+        if self in noteList: noteList.remove(self)
+        self.frame.destroy()
+        del self
 
 
 def openNewWindow():
@@ -43,8 +43,8 @@ def openNewWindow():
 
 
 def addNote():
-	note = Note()
-	noteList.append(note)
+    note = Note()
+    noteList.append(note) 
 
 Label(master, text = "Main").pack()
 Button(master, text = "New Note", command = openNewWindow).pack()
