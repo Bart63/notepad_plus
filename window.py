@@ -1,4 +1,6 @@
+import os
 from tkinter import *
+import tkinter.filedialog
 
 master = Tk()
 master.geometry("200x200")
@@ -29,18 +31,31 @@ class Note:
 
 
 def openNewWindow():
-	newWindow = Toplevel(master)
-	newWindow.title("New Window")
+    newWindow = Toplevel(master)
+    newWindow.title("Note Window")
 
-	Label(newWindow, text = "Write your note here.").pack()
-	Text(newWindow, height = 15, width = 55).pack(fill="both", expand=1)
-	Label(newWindow, text = "Write your tags here.").pack()
-	Entry(newWindow).pack(fill="x")
-	Button(newWindow, text = "Save.", command = addNote).pack(side = "bottom")
+    Label(newWindow, text = "Title of your note.").pack()
+    Entry(newWindow).pack(fill="x")
+    Label(newWindow, text = "Write your note here.").pack()
+    Text(newWindow, height = 15, width = 55).pack(fill="both", expand=1)
+    Label(newWindow, text = "Write your tags here.").pack()
+    Entry(newWindow).pack(fill="x")
+    attachments = Frame(newWindow)
+    attachments.pack()
+    Button(attachments, text="Add attachment", command = lambda: addAttachment(attachments)).pack(side=LEFT)
+    Button(newWindow, text = "Save.", command = addNote).pack(side = "bottom")
 	#save moze przekazac wartosc wiadomosci
 	#i zapisac ja w obiekcie klasy button
 	#command save'a wywoluje tworzenie obiektu note.
 
+
+def addAttachment(frame):
+    path = tkinter.filedialog.askopenfilename()
+    Button(frame, text=path, command=lambda: openFile(path)).pack(side=LEFT)
+    
+def openFile(path):
+    os.startfile(path, "open")
+    
 
 def addNote():
     note = Note()
