@@ -10,16 +10,15 @@ noteList = []
 class Note:
 	
     def __init__ (self):
+
         self.frame = Frame(master)
         self.frame.pack()
 
         self.noteButton = Label(self.frame, text = "Title")
         self.noteButton.pack(side= LEFT)
 
-
         self.delButton  = Button(self.frame, text = "delete", command=self.delMe)
         self.delButton.pack(side = LEFT)
-
 
     def __del__(self):
         print("Bye.")
@@ -30,23 +29,39 @@ class Note:
         del self
 
 
-def openNewWindow():
-    newWindow = Toplevel(master)
-    newWindow.title("Note Window")
+def openNoteWindow():
+    noteWindow = Toplevel(master)
+    noteWindow.title("Note Window")
 
-    Label(newWindow, text = "Title of your note.").pack()
-    Entry(newWindow).pack(fill="x")
-    Label(newWindow, text = "Write your note here.").pack()
-    Text(newWindow, height = 15, width = 55).pack(fill="both", expand=1)
-    Label(newWindow, text = "Write your tags here.").pack()
-    Entry(newWindow).pack(fill="x")
-    attachments = Frame(newWindow)
+    Label(noteWindow, text = "Title of your note.").pack()
+    inputTitle = Entry(noteWindow)
+    inputTitle.pack(fill="x")
+
+    Label(noteWindow, text = "Write your note here.").pack()
+    inputBody = Text(noteWindow, height = 15, width = 55)
+    inputBody.pack(fill="both", expand=1)
+
+    Label(noteWindow, text = "Write your tags here.").pack()
+    inputTags = Entry(noteWindow)
+    inputTags.pack(fill="x")
+
+
+    attachments = Frame(noteWindow)
     attachments.pack()
+
+    def addNote():
+        note = Note()
+        noteList.append(note) 
+
+        # wartosci pobrane z pol wpisane przez uzytkownika do przekazania do klasy note
+        print(inputTitle.get())
+        print(inputBody.get("1.0", END))
+        print(inputTags.get())
+
+        noteWindow.destroy()
+
     Button(attachments, text="Add attachment", command = lambda: addAttachment(attachments)).pack(side=LEFT)
-    Button(newWindow, text = "Save.", command = addNote).pack(side = "bottom")
-	#save moze przekazac wartosc wiadomosci
-	#i zapisac ja w obiekcie klasy button
-	#command save'a wywoluje tworzenie obiektu note.
+    Button(noteWindow, text = "Save.", command = addNote).pack(side = "bottom")
 
 
 def addAttachment(frame):
@@ -57,10 +72,6 @@ def openFile(path):
     os.startfile(path, "open")
     
 
-def addNote():
-    note = Note()
-    noteList.append(note) 
-
 Label(master, text = "Main").pack()
-Button(master, text = "New Note", command = openNewWindow).pack()
+Button(master, text = "New Note", command = openNoteWindow).pack()
 mainloop()
