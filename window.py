@@ -9,6 +9,7 @@ master.geometry("200x200")
 noteList = []
 
 
+
 class Note:
 
     def __init__(self, title, body, tags):
@@ -38,11 +39,14 @@ def loadExisting():
     note_path = Path('./noteData.txt')
     if not note_path.stat().st_size == 0:
         with open('noteData.txt', 'r') as f:
-            title = f.readline()
-            body = f.readline()
-            tags = f.readline()
-            note = Note(title, body, tags)
-            noteList.append(note)
+            while True:
+                title = f.readline()
+                if not title:
+                    break
+                body = f.readline()
+                tags = f.readline()
+                note = Note(title, body, tags)
+                noteList.append(note)
             print(noteList)
         f.close()
     else:
@@ -75,11 +79,13 @@ def openNoteWindow():
 
         note = Note(title, body, tags)
         noteList.append(note)
-        with open('noteData.txt', 'w') as f:
+        with open('noteData.txt', 'r+') as f:
+            f.readlines()
             f.write(note.title)
             f.write('\n')
             f.write(note.body)
             f.write(note.tags)
+            f.write('\n')
 
         print(noteList)
         print(note.body)
