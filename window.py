@@ -9,12 +9,16 @@ noteList = []
 
 class Note:
 	
-    def __init__ (self):
+    def __init__ (self, title, body, tags):
+
+        self.title = title
+        self.body = body
+        self.tags = tags
 
         self.frame = Frame(master)
         self.frame.pack()
 
-        self.noteButton = Label(self.frame, text = "Title")
+        self.noteButton = Label(self.frame, text = title)
         self.noteButton.pack(side= LEFT)
 
         self.delButton  = Button(self.frame, text = "delete", command=self.delMe)
@@ -27,6 +31,7 @@ class Note:
         if self in noteList: noteList.remove(self)
         self.frame.destroy()
         del self
+
 
 
 def openNoteWindow():
@@ -50,14 +55,15 @@ def openNoteWindow():
     attachments.pack()
 
     def addNote():
-        note = Note()
+        title = inputTitle.get()
+        body = inputBody.get("1.0", END)
+        tags = inputTags.get()
+
+        note = Note(title, body, tags)
         noteList.append(note) 
 
-        # wartosci pobrane z pol wpisane przez uzytkownika do przekazania do klasy note
-        print(inputTitle.get())
-        print(inputBody.get("1.0", END))
-        print(inputTags.get())
-
+        print(note.body)
+        print(note.tags)
         noteWindow.destroy()
 
     Button(attachments, text="Add attachment", command = lambda: addAttachment(attachments)).pack(side=LEFT)
