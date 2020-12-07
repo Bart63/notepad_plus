@@ -71,35 +71,40 @@ def openNoteWindow():
 
     attachments = Frame(noteWindow)
     attachments.pack()
-
-    def addNote():
-        title = inputTitle.get()
-        body = inputBody.get("1.0", END)
-        tags = inputTags.get()
-
-        note = Note(title, body, tags)
-        noteList.append(note)
-        with open('noteData.txt', 'r+') as f:
-            f.readlines()
-            f.write(note.title)
-            f.write('\n')
-            f.write(note.body)
-            f.write(note.tags)
-            f.write('\n')
-
-        print(noteList)
-        print(note.body)
-        print(note.tags)
-        noteWindow.destroy()
-
+    
     Button(attachments, text="Add attachment", command=lambda: addAttachment(attachments)).pack(side=LEFT)
     Button(noteWindow, text="Save.", command=addNote).pack(side="bottom")
 
+def addNote():
+    title = inputTitle.get()
+    body = inputBody.get("1.0", END)
+    tags = inputTags.get()
+
+    note = Note(title, body, tags)
+    noteList.append(note)
+    with open('noteData.txt', 'r+') as f:
+        f.readlines()
+        f.write(note.title)
+        f.write('\n')
+        f.write(note.body)
+        f.write(note.tags)
+        f.write('\n')
+
+    print(noteList)
+    print(note.body)
+    print(note.tags)
+    noteWindow.destroy()
 
 def addAttachment(frame):
     path = tkinter.filedialog.askopenfilename()
-    Button(frame, text=path, command=lambda: openFile(path)).pack(side=LEFT)
+    att = Button(frame, text=path, command=lambda: openFile(path))
+    att.pack(side=LEFT)
+    xButton = Button(frame, text="X", command=lambda: delAttachment(att, xButton))
+    xButton.pack(side=LEFT)
 
+def delAttachment(attachment, xButton):
+    attachment.destroy()
+    xButton.destroy()
 
 def openFile(path):
     os.startfile(path, "open")
