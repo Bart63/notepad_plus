@@ -2,10 +2,12 @@ import os
 from tkinter import *
 import tkinter.filedialog
 from pathlib import Path
+import search
 
 master = Tk()
-master.geometry("200x200")
-
+master.geometry("300x400")
+notes = Frame(master)
+searchedNotes = Frame(master)
 noteList = []
 
 class Note:
@@ -16,7 +18,7 @@ class Note:
         self.tags = tags
         self.attachments = attachments
         
-        self.frame = Frame(master)
+        self.frame = notes
         self.frame.pack()
 
         self.noteButton = Label(self.frame, text=title)
@@ -133,7 +135,26 @@ def combine_funcs(*funcs):
             f(*args, **kwargs)
     return combined_func
 
-Label(master, text="Main").pack()
-Button(master, text="New Note", command=openNoteWindow).pack()
+def searchNotes(text):
+    if text.strip():
+        searchedNotes.pack()
+        notes.pack_forget()
+    else:
+        searchedNotes.pack_forget()
+        notes.pack()
+
+
+Button(searchedNotes, text="XD").pack()
+
+Label(master, text="Notepad#").pack()
+nav = Frame(master)
+Button(nav, text="New Note", command=openNoteWindow).pack()
+searchText = Entry(nav)
+searchText.pack(side=LEFT)
+Button(nav, text="Search", command=lambda: searchNotes(searchText.get())).pack(side=LEFT)
+Button(nav, text="X", command=lambda: searchNotes("")).pack(side=LEFT)
+nav.pack()
+
+
 loadExisting()
 mainloop()
