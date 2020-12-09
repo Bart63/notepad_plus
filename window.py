@@ -2,7 +2,7 @@ import os
 from tkinter import *
 import tkinter.filedialog
 from pathlib import Path
-import search
+import search as search
 
 master = Tk()
 master.geometry("300x400")
@@ -18,7 +18,7 @@ class Note:
         self.tags = tags
         self.attachments = attachments
         
-        self.frame = notes
+        self.frame = Frame(notes)
         self.frame.pack()
 
         self.noteButton = Label(self.frame, text=title)
@@ -135,26 +135,58 @@ def combine_funcs(*funcs):
             f(*args, **kwargs)
     return combined_func
 
-def searchNotes(text):
+def searchNotes(text, maxNotes):
+    clearSearchFrame()
     if text.strip():
+        proceedSearch(text, maxNotes)
         searchedNotes.pack()
         notes.pack_forget()
     else:
         searchedNotes.pack_forget()
         notes.pack()
 
+def getTitleList():
+    listT = []
+    for note in noteList:
+        listT.append(note.title)
+    return listT
 
-Button(searchedNotes, text="XD").pack()
+def getTagsList():
+    listT = []
+    for note in noteList:
+        listT.append(note.tags)
+    return listT    
+
+def proceedSearch(inputText, maxNotes):
+    searcher = search.Searcher()
+    searchRes = searcher.Search(inputText, getTitleList(), getTagsList())
+    
+    maxIndex = maxNotes if len(searchRes)>maxNotes else len(searchRes)
+    
+    indexes = []
+    for i in range(0, maxIndex):
+        indexes.append(searchRes[i][0])
+    fillSearchFrame(indexes)
+        
+
+def fillSearchFrame(indexes):
+    for ind in indexes:
+        noteButton = Label(searchedNotes, text=noteList[ind].title)
+        noteButton.pack(side=TOP)
+        
+def clearSearchFrame():
+    for child in searchedNotes.winfo_children():
+        child.destroy()
 
 Label(master, text="Notepad#").pack()
 nav = Frame(master)
 Button(nav, text="New Note", command=openNoteWindow).pack()
 searchText = Entry(nav)
 searchText.pack(side=LEFT)
-Button(nav, text="Search", command=lambda: searchNotes(searchText.get())).pack(side=LEFT)
-Button(nav, text="X", command=lambda: searchNotes("")).pack(side=LEFT)
+Button(nav, text="Search", command=lambda: searchNotes(searchText.get(), 3)).pack(side=LEFT)
+Button(nav, text="X", command=lambda: searchNotes("", 0)).pack(side=LEFT)
 nav.pack()
-
+notes.pack()
 
 loadExisting()
 mainloop()
