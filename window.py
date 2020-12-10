@@ -40,29 +40,45 @@ class Note:
             save(n.title, n.body, n.tags, n.attachments)
         del self
 
+    def getAttachementList(self):
+        listAtt = self.attachments.split(';')
+        return listAtt
+
     def openMe(self):
-        with open('noteData.txt', 'r') as f:
-            f.readlines(3 * noteList.index(self))
-            title = f.readline().rstrip()
-            body = f.readline().rstrip()
-            tags = f.readline().rstrip()
-            attachments = f.readline().rstrip()
+        title = self.title
+        body = self.body
+        tags = self.tags
+        attachments = self.attachments
         noteWindow = Toplevel(master)
         noteWindow.title("Note Window")
         Label(noteWindow, text="Title of your note.").pack()
-        inputTitle = Entry.insert(0, title)
+        inputTitle = Entry(noteWindow)
+        inputTitle.insert(0, title)
         inputTitle.pack(fill="x")
 
         Label(noteWindow, text="Write your note here.").pack()
-        inputBody = Entry.insert(0, body)
+        inputBody = Entry(noteWindow) 
+        inputBody.insert(0, body)
         inputBody.pack(fill="both", expand=1)
 
         Label(noteWindow, text="Write your tags here.").pack()
-        inputTags = Entry.insert(0, tags)
+        inputTags = Entry(noteWindow)
+        inputTags.insert(0, tags)
         inputTags.pack(fill="x")
 
+        def killWindow():
+            noteWindow.destroy()
+
+        attList = self.getAttachementList()
+        attachments = Frame(noteWindow)
         attachments.pack()
-        print(noteList.index(self))
+        Button(attachments, text="Add attachment", command=lambda: addAttachment(attachments)).pack(side=LEFT)
+        for att in attList:
+            if not att.strip:
+                addExistingAtt(attachments, att)
+        Button(noteWindow, text="Save.", command=lambda: combine_funcs(
+        addNote(inputTitle, inputBody, inputTags, attachments), killWindow(), self.delMe())
+           ).pack(side="bottom")
 
 
 def loadExisting():
@@ -114,7 +130,6 @@ def addNote(inputTitle, inputBody, inputTags, inputAttachments):
     body = inputBody.get()
     tags = inputTags.get()
 
-    attachmentsList = []
     attChildren = inputAttachments.winfo_children()
 
     attachments = ""
@@ -164,6 +179,11 @@ def addAttachment(frame):
     xButton = Button(frame, text="X", command=lambda: delAttachment(att, xButton))
     xButton.pack(side=LEFT)
 
+def addExistingAtt(frame, path):
+    att = Button(frame, text=path, command=lambda: openFile(path))
+    att.pack(side=LEFT)
+    xButton = Button(frame, text="X", command=lambda: delAttachment(att, xButton))
+    xButton.pack(side=LEFT)
 
 def delAttachment(attachment, xButton):
     attachment.destroy()
@@ -221,9 +241,19 @@ def proceedSearch(inputText, maxNotes):
 
 def fillSearchFrame(indexes):
     for ind in indexes:
-        noteButton = Label(searchedNotes, text=noteList[ind].title)
-        noteButton.pack(side=TOP)
+        note = Frame(searchedNotes)
+        note.pack()
+        noteButton = Label(note, text=noteList[ind].title)
+        noteButton.pack(side=LEFT)
 
+        delButt(ind, note)
+        openButt(ind, note)
+
+def delButt(ind, note):
+    Button(note, text="delete", command=lambda: noteList[ind].delMe()).pack(side=LEFT)
+
+def openButt(ind, note):
+    Button(note, text="open", command=lambda: noteList[ind].openMe()).pack(side=LEFT)
 
 def clearSearchFrame():
     for child in searchedNotes.winfo_children():
