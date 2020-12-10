@@ -1,7 +1,8 @@
 import os
-from tkinter import *
 import tkinter.filedialog
 from pathlib import Path
+from tkinter import *
+
 import search as search
 
 master = Tk()
@@ -10,6 +11,7 @@ notes = Frame(master)
 searchedNotes = Frame(master)
 noteList = []
 
+
 class Note:
 
     def __init__(self, title, body, tags, attachments):
@@ -17,7 +19,7 @@ class Note:
         self.body = body
         self.tags = tags
         self.attachments = attachments
-        
+
         self.frame = Frame(notes)
         self.frame.pack()
 
@@ -27,6 +29,9 @@ class Note:
         self.delButton = Button(self.frame, text="delete", command=self.delMe)
         self.delButton.pack(side=LEFT)
 
+        self.openButton = Button(self.frame, text="open", command=self.openMe)
+        self.openButton.pack(side=LEFT)
+
     def delMe(self):
         if self in noteList: noteList.remove(self)
         self.frame.destroy()
@@ -34,6 +39,31 @@ class Note:
         for n in noteList:
             save(n.title, n.body, n.tags, n.attachments)
         del self
+
+    def openMe(self):
+        with open('noteData.txt', 'r') as f:
+            f.readlines(3 * noteList.index(self))
+            title = f.readline().rstrip()
+            body = f.readline().rstrip()
+            tags = f.readline().rstrip()
+            attachments = f.readline().rstrip()
+        noteWindow = Toplevel(master)
+        noteWindow.title("Note Window")
+        Label(noteWindow, text="Title of your note.").pack()
+        inputTitle = Entry.insert(0, title)
+        inputTitle.pack(fill="x")
+
+        Label(noteWindow, text="Write your note here.").pack()
+        inputBody = Entry.insert(0, body)
+        inputBody.pack(fill="both", expand=1)
+
+        Label(noteWindow, text="Write your tags here.").pack()
+        inputTags = Entry.insert(0, tags)
+        inputTags.pack(fill="x")
+
+        attachments.pack()
+        print(noteList.index(self))
+
 
 def loadExisting():
     note_path = Path('./noteData.txt')
@@ -49,6 +79,7 @@ def loadExisting():
                 note = Note(title, body, tags, attachments)
                 noteList.append(note)
         f.close()
+
 
 def openNoteWindow():
     noteWindow = Toplevel(master)
@@ -71,49 +102,60 @@ def openNoteWindow():
 
     attachments = Frame(noteWindow)
     attachments.pack()
-    
+
     Button(attachments, text="Add attachment", command=lambda: addAttachment(attachments)).pack(side=LEFT)
     Button(noteWindow, text="Save.", command=lambda: combine_funcs(
         addNote(inputTitle, inputBody, inputTags, attachments), killWindow())
-        ).pack(side="bottom")
+           ).pack(side="bottom")
+
 
 def addNote(inputTitle, inputBody, inputTags, inputAttachments):
     title = inputTitle.get()
     body = inputBody.get()
     tags = inputTags.get()
-    
+
     attachmentsList = []
     attChildren = inputAttachments.winfo_children()
-    
+
     attachments = ""
-    
+
     for i in range(1, len(attChildren), 2):
-        if i>2: attachments += ";"
+        if i > 2: attachments += ";"
         attachments += attChildren[i]['text']
 
     note = Note(title, body, tags, attachments)
     save(note.title, note.body, note.tags, note.attachments)
     noteList.append(note)
 
+
 def clear():
     open('noteData.txt', 'w').close()
+
 
 def save(title, body, tags, attachments):
     with open('noteData.txt', 'r+') as f:
         f.readlines()
 
-        if len(title): f.write(title + '\n')
-        else: f.write('\n')
+        if len(title):
+            f.write(title + '\n')
+        else:
+            f.write('\n')
 
-        if len(body): f.write(body + '\n')
-        else: f.write('\n')
+        if len(body):
+            f.write(body + '\n')
+        else:
+            f.write('\n')
 
-        if len(tags): f.write(tags + '\n')
-        else: f.write('\n')
+        if len(tags):
+            f.write(tags + '\n')
+        else:
+            f.write('\n')
 
-        if len(attachments): f.write(attachments + '\n')
-        else: f.write('\n')
-        
+        if len(attachments):
+            f.write(attachments + '\n')
+        else:
+            f.write('\n')
+
 
 def addAttachment(frame):
     path = tkinter.filedialog.askopenfilename()
@@ -122,18 +164,23 @@ def addAttachment(frame):
     xButton = Button(frame, text="X", command=lambda: delAttachment(att, xButton))
     xButton.pack(side=LEFT)
 
+
 def delAttachment(attachment, xButton):
     attachment.destroy()
     xButton.destroy()
 
+
 def openFile(path):
     os.startfile(path, "open")
+
 
 def combine_funcs(*funcs):
     def combined_func(*args, **kwargs):
         for f in funcs:
             f(*args, **kwargs)
+
     return combined_func
+
 
 def searchNotes(text, maxNotes):
     clearSearchFrame()
@@ -145,38 +192,43 @@ def searchNotes(text, maxNotes):
         searchedNotes.pack_forget()
         notes.pack()
 
+
 def getTitleList():
     listT = []
     for note in noteList:
         listT.append(note.title)
     return listT
 
+
 def getTagsList():
     listT = []
     for note in noteList:
         listT.append(note.tags)
-    return listT    
+    return listT
+
 
 def proceedSearch(inputText, maxNotes):
     searcher = search.Searcher()
     searchRes = searcher.Search(inputText, getTitleList(), getTagsList())
-    
-    maxIndex = maxNotes if len(searchRes)>maxNotes else len(searchRes)
-    
+
+    maxIndex = maxNotes if len(searchRes) > maxNotes else len(searchRes)
+
     indexes = []
     for i in range(0, maxIndex):
         indexes.append(searchRes[i][0])
     fillSearchFrame(indexes)
-        
+
 
 def fillSearchFrame(indexes):
     for ind in indexes:
         noteButton = Label(searchedNotes, text=noteList[ind].title)
         noteButton.pack(side=TOP)
-        
+
+
 def clearSearchFrame():
     for child in searchedNotes.winfo_children():
         child.destroy()
+
 
 Label(master, text="Notepad#").pack()
 nav = Frame(master)
