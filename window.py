@@ -250,7 +250,9 @@ def fillSearchFrame(indexes):
         openButt(ind, note)
 
 def delButt(ind, note):
-    Button(note, text="delete", command=lambda: noteList[ind].delMe()).pack(side=LEFT)
+    Button(note, text="delete", command=lambda: combine_funcs(noteList[ind].delMe()
+                                                              , searchNotes("", 0))
+           ).pack(side=LEFT)
 
 def openButt(ind, note):
     Button(note, text="open", command=lambda: noteList[ind].openMe()).pack(side=LEFT)
