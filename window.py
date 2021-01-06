@@ -74,7 +74,7 @@ class Note:
         attachments.pack()
         Button(attachments, text="Add attachment", command=lambda: addAttachment(attachments)).pack(side=LEFT)
         for att in attList:
-            if not att.strip:
+            if len(att)>1:
                 addExistingAtt(attachments, att)
         Button(noteWindow, text="Save.", command=lambda: combine_funcs(
         addNote(inputTitle, inputBody, inputTags, attachments), killWindow(), self.delMe())
